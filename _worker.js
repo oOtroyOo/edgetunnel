@@ -280,6 +280,10 @@ export default {
 							pagesSum = config_JSON.CF.Usage.pages;
 							workersSum = config_JSON.CF.Usage.workers;
 							total = Number.isFinite(config_JSON.CF.Usage.max) ? (config_JSON.CF.Usage.max / 1000) * 1024 : 1024 * 100;
+
+							pagesSum = Math.floor(100 * pagesSum / total)
+							workersSum = Math.floor(100 * pagesSum / total)
+							total = 100
 						}
 						const responseHeaders = {
 							"content-type": "text/plain; charset=utf-8",

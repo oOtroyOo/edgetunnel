@@ -7,7 +7,8 @@ echo "==> configure git identity (runner default is empty)"
 git config user.name "github-actions[bot]"
 git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-echo "==> add upstream remote"
+echo "==> add upstream remote (idempotent)"
+git remote remove upstream 2>/dev/null || true
 git remote add upstream https://github.com/cmliu/edgetunnel.git
 
 echo "==> fetch upstream main"

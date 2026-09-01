@@ -1,0 +1,33 @@
+name: Deploy edgetunnel (merge upstream)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout myset
+        uses: actions/checkout@v4
+        with:
+          ref: myset
+          fetch-depth: 0
+
+      - name: Merge upstream main (local commit, no push)
+        run: |
+          # runner 默认无 git 身份, 提交需要
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/cmliu/edgetunnel.git
+          git fetch upstream main
+          # -X ours: 冲突时保留本地 myset 定制内容(如 wrangler.toml 的 ADMIN / KV id)
+          # 会产生本地合并提交, 但不 push
+          git merge -X ours upstream/main
+          git log --oneline -1
+
+      - name: Deploy with wrangler
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: deploy
